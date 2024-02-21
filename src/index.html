@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Chat</title>
+    <style>
+        body {
+            background-color: #F0D3EE;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 400px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between; /* Размещение элементов по краям */
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1; /* Растягиваем поле ввода на всю доступную ширину */
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            margin-right: 10px; /* Отступ между полем ввода и кнопкой */
+        }
+
+        button {
+            background-color: #ADD8E6;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #chatMessages {
+            width: 100%;
+            text-align: left;
+        }
+
+        .message {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .message time {
+            font-size: 12px;
+            color: #888;
+            margin-left: 5px;
+        }
+
+        .logo {
+            max-width: 300px; /* Максимальная ширина изображения */
+            margin-bottom: 20px; /* Отступ снизу */
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Real-time Chat</h1>
+    <p>A simple real-time chat application</p>
+    <img src="https://habrastorage.org/r/w1560/getpro/habr/upload_files/f91/119/520/f911195200e42bbc746227380d33a25e.png" alt="Logo" class="logo">
+    <div class="input-container">
+        <input type="text" id="messageInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="chatMessages"></div>
+</div>
+
+<script>
+    const socket = new WebSocket("ws://localhost:8080/ws");
+
+    socket.onmessage = function(event) {
+        const message = event.data;
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+        messageElement.innerHTML = `${message} <time>${new Date().toLocaleTimeString()}</time>`;
+        document.getElementById("chatMessages").appendChild(messageElement);
+    };
+
+    function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const message = messageInput.value;
+        socket.send(message);
+        messageInput.value = "";
+    }
+</script>
+</body>
+</html>
